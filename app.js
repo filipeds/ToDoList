@@ -43,7 +43,7 @@ class TaskView {
                 <li>
                     ${task.name} <small>${task.date}</small>
                     <button class="delete" data-id="${task.id}">🗑️</button>
-                    <button class="edit" data-id="${task.id}">✏️✏️✏️</button>
+                    <button class="edit" data-id="${task.id}">✏️</button>
                 </li>
             `)
             .join("");
