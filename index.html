@@ -10,11 +10,39 @@
     <div class="container">
         <h1>Lista de Tarefas</h1>
         <div class="input-group">
-            <input class="grid" type="text" id="taskInput" placeholder="Nome tarefa">
-            <input class="grid" type="date" id="dateInput" placeholder="Data">
-            <button id="addTaskButton">+</button>
+            <input type="text" id="taskInput" placeholder="Nome tarefa">
+            <div class="select-container-status">
+                <select id="statusSelect">
+                    <option value="" disabled selected>Selecione um status</option>
+                    <option value="Backlog">Backlog</option>
+                    <option value="Em andamento">Em andamento</option>
+                    <option value="Finalizada">Finalizada</option>
+                </select>
+            </div>            
+            <div class="select-container-priority">
+                <select id="prioritySelect">
+                    <option value="" disabled selected>Selecione uma prioridade</option>
+                    <option value="Baixa">Baixa</option>
+                    <option value="Média">Média</option>
+                    <option value="Alta">Alta</option>
+                    <option value="Urgente">Urgente</option>
+                </select>
+            </div>    
+            <input type="date" id="dateInput" placeholder="Data de Vencimento">
+            <button id="addTaskButton">Adicionar</button>
         </div>
-        <ul id="taskList"></ul>
+        <table id="taskTable">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th>Prioridade</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="taskList"></tbody>
+        </table>        
     </div>
     <script src="app.js"></script>
 </body>

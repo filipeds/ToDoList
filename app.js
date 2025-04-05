@@ -3,17 +3,21 @@ class TaskModel {
         this.tasks = [];
     }
 
-    addTask(taskName, taskDate, taskId = null) {
+    addTask(taskName, taskDate, taskStatus, taskPriority, taskId = null) {
         if (taskId) {
             const task = this.tasks.find(task => task.id === taskId);
             if (task) {
                 task.name = taskName;
                 task.date = taskDate || new Date().toLocaleDateString("pt-BR");
+                task.taskStatus = taskStatus;
+                task.taskPriority = taskPriority;
             }
         } else {
             const task = {
                 id: Date.now(),
                 name: taskName,
+                taskStatus: taskStatus,
+                taskPriority: taskPriority,
                 date: taskDate || new Date().toLocaleDateString("pt-BR")
             };
             this.tasks.push(task);
@@ -31,20 +35,27 @@ class TaskModel {
 
 class TaskView {
     constructor() {
-        this.taskList = document.getElementById('taskList');
+        this.taskList = document.getElementById('taskList'); // tbody
         this.taskInput = document.getElementById('taskInput');
-        this.dateInput = document.getElementById('dateInput'); 
+        this.dateInput = document.getElementById('dateInput');
+        this.statusSelect = document.getElementById('statusSelect');
+        this.prioritySelect = document.getElementById('prioritySelect');
         this.addTaskButton = document.getElementById('addTaskButton');
     }
 
     renderTasks(tasks, deleteCallback, editCallback) {
         this.taskList.innerHTML = tasks
             .map(task => `
-                <li>
-                    ${task.name} <small>${task.date}</small>
-                    <button class="delete" data-id="${task.id}">🗑️</button>
-                    <button class="edit" data-id="${task.id}">✏️</button>
-                </li>
+                <tr>
+                    <td>${task.name}</td>
+                    <td>${task.date}</td>
+                    <td>${task.taskStatus}</td>
+                    <td>${task.taskPriority}</td>
+                    <td>
+                        <button class="edit" data-id="${task.id}">✏️</button>
+                        <button class="delete" data-id="${task.id}">🗑️</button>
+                    </td>
+                </tr>
             `)
             .join("");
 
@@ -71,23 +82,24 @@ class TaskController {
         this.editingTaskId = null;
 
         this.view.addTaskButton.addEventListener('click', () => this.addOrUpdateTask());
+        this.updateView();
     }
 
     addOrUpdateTask() {
         const taskName = this.view.taskInput.value.trim();
         const taskDate = this.view.dateInput.value;
         const formattedDate = taskDate ? new Date(taskDate).toLocaleDateString("pt-BR") : null;
+        const taskStatus = this.view.statusSelect.value;
+        const taskPriority = this.view.prioritySelect.value;
 
-        if (taskName) {
-            this.model.addTask(taskName, formattedDate, this.editingTaskId);
-            this.view.taskInput.value = "";
-            this.view.dateInput.value = ""; 
-            this.editingTaskId = null; 
-            this.view.addTaskButton.textContent = "Adicionar";
-            this.updateView();
-        } else {
-            alert("Por favor, digite uma tarefa.");
+        if (!taskName || !taskStatus || !taskPriority) {
+            alert("Por favor, preencha todos os campos.");
+            return;
         }
+
+        this.model.addTask(taskName, formattedDate, taskStatus, taskPriority, this.editingTaskId);
+        this.clearForm();
+        this.updateView();
     }
 
     editTask(taskId) {
@@ -95,6 +107,8 @@ class TaskController {
         if (task) {
             this.view.taskInput.value = task.name;
             this.view.dateInput.value = task.date.split('/').reverse().join('-');
+            this.view.statusSelect.value = task.taskStatus;
+            this.view.prioritySelect.value = task.taskPriority;
             this.editingTaskId = taskId;
             this.view.addTaskButton.textContent = "Atualizar";
         }
@@ -107,6 +121,15 @@ class TaskController {
 
     updateView() {
         this.view.renderTasks(this.model.getTasks(), this.deleteTask.bind(this), this.editTask.bind(this));
+    }
+
+    clearForm() {
+        this.view.taskInput.value = "";
+        this.view.dateInput.value = "";
+        this.view.statusSelect.value = "";
+        this.view.prioritySelect.value = "";
+        this.editingTaskId = null;
+        this.view.addTaskButton.textContent = "Adicionar";
     }
 }
 
